@@ -1,5 +1,6 @@
 var request = require('request');
 var expect = require('chai').expect;
+var randtoken = require('rand-token');
 
 describe('server', function() {
   it('should respond to GET requests for /classes/messages with a 200 status code', function(done) {
@@ -70,6 +71,63 @@ describe('server', function() {
     request('http://127.0.0.1:3000/arglebargle', function(error, response, body) {
       expect(response.statusCode).to.equal(404);
       done();
+    });
+  });
+
+  it('should return results with a objectId property', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'
+      }
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages[0].objectId).to.be.a('string');
+        done();
+      });
+    });
+  });
+
+  it('should return results with a createdAt property', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'
+      }
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages[0].createdAt).to.be.a('string');
+        done();
+      });
+    });
+  });
+
+  it('should return results with roomname property defaulted to lobby', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        message: 'Do my bidding!'
+      }
+    };
+
+    request(requestParams, function(error, response, body) {
+      // Now if we request the log, that message we posted should be there:
+      request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
+        var messages = JSON.parse(body).results;
+        expect(messages[0].roomname).to.equal('lobby');
+        done();
+      });
     });
   });
 

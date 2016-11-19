@@ -20,8 +20,15 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 var storage = {
-  results: []
+  results: [{
+    username: 'Jono',
+    message: 'Do my bidding!'
+  }]
 };
+
+storage.results[0].objectId = randtoken.generate(10);
+storage.results[0].createdAt = new Date();
+storage.results[0].roomname = 'lobby';
 
 var requestHandler = function(request, response) {
 
@@ -65,6 +72,7 @@ var requestHandler = function(request, response) {
     request.on('end', function() {
       var msgObj = JSON.parse(msgBody);
       msgObj.objectId = randtoken.generate(10);
+      msgObj.createdAt = new Date();
       console.log(msgObj);
       storage.results.push(msgObj);
       response.writeHead(201, headers);

@@ -168,7 +168,7 @@ var app = {
     $message.text(message.message).appendTo($chat);
 
     // Add the message to the UI
-    app.$chats.append($chat);
+    app.$chats.prepend($chat);
 
   },
 
