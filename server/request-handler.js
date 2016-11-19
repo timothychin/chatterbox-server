@@ -1,3 +1,5 @@
+var randtoken = require('rand-token');
+
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -39,6 +41,9 @@ var requestHandler = function(request, response) {
   // console.logs in your code.
   // console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
+  // The outgoing status.
+  var statusCode = 200;
+
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
 
@@ -58,17 +63,22 @@ var requestHandler = function(request, response) {
     });
 
     request.on('end', function() {
-      storage.results.push(JSON.parse(msgBody));
+      var msgObj = JSON.parse(msgBody);
+      msgObj.objectId = randtoken.generate(10);
+      console.log(msgObj);
+      storage.results.push(msgObj);
       response.writeHead(201, headers);
       response.end(JSON.stringify(storage));
     });
 
-  } else if (request.method === 'GET') {
+  } else if (request.method === 'GET' || request.method === 'OPTIONS') {
     if (request.url !== '/classes/messages') {
-      response.writeHead(404, headers);
+      statusCode = 404;
     } else {
-      response.writeHead(200, headers);
+      statusCode = 200;
     }
+    console.log(storage);
+    response.writeHead(statusCode, headers);
     response.end(JSON.stringify(storage));
   }
 
